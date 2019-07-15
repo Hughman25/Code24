@@ -30,7 +30,7 @@ public class Player {
   public Player(Context context, int screenX, int screenY){
     screenWidth = screenX;
     screenHeight = screenY;
-    Xval = 250;
+    Xval = 150;
     Yval = 720;
     playerImage = BitmapFactory.decodeResource(context.getResources(), R.drawable.knuckles_run);
     playerImageResized = Bitmap.createScaledBitmap(playerImage, 200, 200, false);

@@ -49,90 +49,91 @@ public class Tile {
         this.length = length;
     }
 
-    //fills the tile with a block
+    //fills the tile with blocks
     public void fillTile()
     {
         tidePods = new ArrayList<>();
-        int random_height = rand.nextInt(height - 4);
+        int random_height_cap = rand.nextInt(height - 4);
         int random_gap = rand.nextInt(length);
-        int random_plume = rand.nextInt(length);
+        int random_hill = rand.nextInt(length-4);
 
-        if(random_height == 0)
+        if(random_height_cap == 0)
         {
-            random_height = 1;
+            random_height_cap = 1;
         }
-        if(random_gap == 0)
+        if(random_hill <= 6)
         {
-            random_gap = 1;
+            random_hill = 13;
         }
-        if(random_gap - random_plume == 0)
-        {
-            random_gap += 1;
-        }
-
-        while(random_plume == random_gap)
-        {
-            random_plume = rand.nextInt(length);
-        }
-        int scale = Math.abs(random_gap - random_plume);
 
 
         //add block to Tile, compliment to the fillTile(), additionally adds random gaps in the game
         //to present some level of difficulty
+        boolean makehill = false;
         for(int i = 0; i < tileMap.length; i++)
         {
-            int random_adjust = rand.nextInt(Math.abs(random_height));
+            int count = 0;
+            int random_adjust = rand.nextInt(Math.abs(random_height_cap));
             int random_adjust2 = rand.nextInt(random_gap);
+
+            if(i > 6 && i == random_gap || i == random_adjust)
+            {
+                continue;
+            }
+
+            if(makehill){count++;}
 
             for(int j = 0; j < tileMap[i].length; j++)
             {
-                int block_type = rand.nextInt(1);
 
                 if(j == tileMap[i].length - 1)
                 {
-                    if(rand.nextBoolean()) {
+                    if(rand.nextBoolean() || rand.nextBoolean()) {
                         makeBlock(i, j, 0);
                     }
-                    else
-                    {
-                        makeBlock(i, j, 1);
+                    else{
+                        if(rand.nextBoolean()) {
+                            makeBlock(i, j, 1);
+                        }
                     }
                 }
-                if(i == random_gap && j < tileMap[i].length)
-                {
-                    tileMap[i][j] = null;
-                }
-                if(i == scale + random_adjust2 && j == tileMap[i].length - (random_adjust - 2))
-                {
-                    makeBlock(i, j, 2);
-                }
-                if(i == random_gap + random_adjust2 && j == tileMap[i].length - (random_adjust - 2))
-                {
-                    makeBlock(i, j, 0);
-                }
-                if(i == scale - 4 && j >= tileMap[i].length - random_height)
-                {
-                    makeBlock(i, j, 0);
-                }
-                if(i == scale - 3 && j >= tileMap[i].length - random_height - random_adjust)
-                {
-                    makeBlock(i, j, 0);
-                }
-                if(i == scale - 2 && j >= tileMap[i].length - random_height - random_adjust)
-                {
-                    makeBlock(i, j, 0);
-                }
-                if(i == scale - 1 && j >= tileMap[i].length - 2)
-                {
-                    makeBlock(i, j, 2);
-                }
-                if(i == random_gap - random_adjust2 && j == tileMap[i].length - random_adjust - 3)
-                {
-                    makeBlock(i, j, 2);
-                }
-                if(i <= 10 && j == tileMap[i].length - 1)
-                {
-                    makeBlock(i, j, 0);
+                else{
+                    if(i > 6)
+                    {
+                        if(i >= random_hill - random_adjust2 && i < random_hill - random_adjust + 3 && j >= tileMap[i].length + count - random_height_cap)
+                        {
+                            makeBlock(i, j, 0);
+                            makehill = true;
+                        }
+                        else{
+                            makehill = false;
+                        }
+                        if(i == random_hill + random_adjust - 2 && j >= tileMap[i].length - random_height_cap)
+                        {
+                            makeBlock(i, j, 0);
+                        }
+                        if(i == random_hill + random_adjust - 1 && j >= tileMap[i].length - random_height_cap - random_adjust)
+                        {
+                            makeBlock(i, j, 0);
+                        }
+                        if(i == random_hill + random_adjust && j >= tileMap[i].length - random_height_cap - random_adjust)
+                        {
+                            makeBlock(i, j, 0);
+                        }
+                    }
+                    if(i == random_height_cap + random_adjust2 && j == tileMap[i].length - (random_adjust - 2))
+                    {
+                        makeBlock(i, j, 2);
+                    }
+                    if(i == random_adjust + 1 && j >= tileMap[i].length - 2)
+                    {
+                        makeBlock(i, j, 2);
+                    }
+                    if(i == random_gap - random_adjust2 && j == tileMap[i].length - random_adjust - 3)
+                    {
+                        makeBlock(i, j, 2);
+                    }
+
                 }
             }
         }
@@ -140,10 +141,15 @@ public class Tile {
 
     //makes the block to be added up above
     private void makeBlock(int i, int j, int k) {
-        tileMap[i][j] = new Block(blocks[k], i, j);
         if(k == 2)
         {
-            tidePods.add((double) i + (j/10.00));
+            if(tileMap[i][j] == null) {
+                tidePods.add((double) i + (j / 10.00));
+                tileMap[i][j] = new Block(blocks[k], i, j);
+            }
+        }
+        else {
+            tileMap[i][j] = new Block(blocks[k], i, j);
         }
     }
 
